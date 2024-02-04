@@ -7,7 +7,6 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -22,9 +21,9 @@ public class StockManager {
 	public StockManager() {
 		gson = new Gson();
 		productos = loadDataFromJson(PRODUCTOS_JSON_FILE_PATH, new TypeToken<ArrayList<Producto>>() {
-		});
+		}.getType());
 		usuarios = loadDataFromJson(USUARIOS_JSON_FILE_PATH, new TypeToken<ArrayList<Usuario>>() {
-		});
+		}.getType());
 	}
 
 	// Add a product to the stock
@@ -35,12 +34,19 @@ public class StockManager {
 
 	// Update the quantity of a product in the stock
 	public void updateProductQuantity(String productId, int newQuantity) {
-		// Implement update logic here
+		for (Producto producto : productos) {
+			if (producto.getID().equals(productId)) {
+				// producto.setCantidad(newQuantity);
+				saveDataToJson(PRODUCTOS_JSON_FILE_PATH, productos);
+				break;
+			}
+		}
 	}
 
 	// Remove a product from the stock
 	public void removeProduct(String productId) {
-		// Implement removal logic here
+		productos.removeIf(producto -> producto.getID().equals(productId));
+		saveDataToJson(PRODUCTOS_JSON_FILE_PATH, productos);
 	}
 
 	// Add a user to the list
@@ -49,9 +55,9 @@ public class StockManager {
 		saveDataToJson(USUARIOS_JSON_FILE_PATH, usuarios);
 	}
 
-	public Vector<Usuario> desserializarJsonAArray() {
-		return StockManager.getUsuarios();
-	}
+	// public Vector<Usuario> desserializarJsonAArray() {
+	// return StockManager.getUsuarios();
+	// }
 
 	// Display the current stock
 	public void displayStock() {
@@ -73,6 +79,33 @@ public class StockManager {
 			return gson.fromJson(reader, type);
 		} catch (IOException e) {
 			return new ArrayList<>();
+		}
+	}
+	// Getters and Setters
+
+	public List<Producto> getProductos() {
+		return productos;
+	}
+
+	public void setProductos(List<Producto> productos) {
+		this.productos = productos;
+	}
+
+	public List<Usuario> getUsuarios() {
+		return usuarios;
+	}
+
+	public void setUsuarios(List<Usuario> usuarios) {
+		this.usuarios = usuarios;
+	}
+
+	public static void main(String[] args) {
+		StockManager sm = new StockManager();
+		for (Producto p : sm.getProductos()) {
+			System.out.println(p.toString());
+		}
+		for (Usuario u : sm.getUsuarios()) {
+			System.out.println(u.toString());
 		}
 	}
 

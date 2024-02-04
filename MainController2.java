@@ -32,10 +32,22 @@ public class MainController2 implements Initializable {
 	private TableView<Producto> ProductosView;
 
 	@FXML
-	private TableView<Cliente> ClientesView;
+	private TableView<Proveedor> proveedores;
 
 	@FXML
-	private TableView<Proveedor> ProveedorView;
+	private TableColumn<Proveedor, String> idPrvCol;
+
+	@FXML
+	private TableColumn<Proveedor, String> namePrvCol;
+
+	@FXML
+	private TableView<Cliente> clientes;
+
+	@FXML
+	private TableColumn<Cliente, String> idClCol;
+
+	@FXML
+	private TableColumn<Cliente, String> nameClCol;
 
 	@FXML
 	private JFXButton AñadirButton;
@@ -50,23 +62,29 @@ public class MainController2 implements Initializable {
 	private Tab tabProductos, tabClientes, tabProveedores;
 
 	@FXML
-	void onAñadirAction(ActionEvent event) {
-
+	void onAñadirAction(ActionEvent event) throws IOException {
+		Main m = new Main();
+		m.changeScene("/resource/Add.fxml");
 	}
 
 	@FXML
-	void onBorrarAction(ActionEvent event) {
-
+	void onBorrarAction(ActionEvent event) throws IOException {
+		Main m = new Main();
+		m.changeScene("/resource/Delete.fxml");
 	}
 
 	@FXML
-	void onModificarButton(ActionEvent event) {
-
+	void onModificarButton(ActionEvent event) throws IOException {
+		Main m = new Main();
+		m.changeScene("/resource/Edit.fxml");
 	}
 
 	public static Vector<Producto> prl = new Vector<Producto>(); // Lista productos
+	public static Vector<Proveedor> prvl = new Vector<Proveedor>(); // Lista proveedores
+	public static Vector<Cliente> cll = new Vector<Cliente>(); // Lista clientes
 
 	// Manejo archivos json
+	// Productos
 	public void serializarArrayAJson(Vector<Producto> productos) {
 
 		Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
@@ -89,6 +107,36 @@ public class MainController2 implements Initializable {
 			e.printStackTrace();
 		}
 		return productos;
+	}
+
+	// Clientes
+	public Vector<Cliente> desserializarJsonAArrayCl() {
+		Vector<Cliente> clientes = new Vector<Cliente>();
+
+		try (Reader reader = new FileReader("clientes.json")) {
+			Gson gson = new Gson();
+			Type tipoListaClientes = new TypeToken<Vector<Cliente>>() {
+			}.getType();
+			clientes = gson.fromJson(reader, tipoListaClientes);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return clientes;
+	}
+
+	// Proveedores
+	public Vector<Proveedor> desserializarJsonAArrayPrv() {
+		Vector<Proveedor> proveedores = new Vector<Proveedor>();
+
+		try (Reader reader = new FileReader("proveedores.json")) {
+			Gson gson = new Gson();
+			Type tipoListaProveedores = new TypeToken<Vector<Proveedor>>() {
+			}.getType();
+			proveedores = gson.fromJson(reader, tipoListaProveedores);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return proveedores;
 	}
 
 	@Override
@@ -127,16 +175,27 @@ public class MainController2 implements Initializable {
 
 		// this.ProductosView.getItems().add(newPrd);
 
-		/*
-		 * Atributos Producto private String ID; private String Nombre; private String
-		 * CodProveedor; private double PrecioCompra; private double PrecioVenta;
-		 * private Date Caducidad;
-		 */
+		// Tabla Proveedores
+		idPrvCol.setCellValueFactory(new PropertyValueFactory<Proveedor, String>("ID"));
+		namePrvCol.setCellValueFactory(new PropertyValueFactory<Proveedor, String>("nombre"));
+		// Tabla Clientes
+		idClCol.setCellValueFactory(new PropertyValueFactory<Cliente, String>("ID"));
+		nameClCol.setCellValueFactory(new PropertyValueFactory<Cliente, String>("nombre"));
+
 		MainController2 m2 = new MainController2();
+
 		prl = m2.desserializarJsonAArray();
+		prvl = m2.desserializarJsonAArrayPrv();
+		cll = m2.desserializarJsonAArrayCl();
 
 		for (int i = 0; i < prl.size(); i++) {
 			this.ProductosView.getItems().add(prl.get(i));
+		}
+		for (int i = 0; i < prvl.size(); i++) {
+			this.proveedores.getItems().add(prvl.get(i));
+		}
+		for (int i = 0; i < cll.size(); i++) {
+			this.clientes.getItems().add(cll.get(i));
 		}
 
 	}

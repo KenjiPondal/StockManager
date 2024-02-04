@@ -70,4 +70,10 @@ public class Producto {
 		super();
 	}
 
+	@Override
+	public String toString() {
+		return "Producto [ID=" + ID + ", Nombre=" + Nombre + ", CodProveedor=" + CodProveedor + ", PrecioCompra="
+				+ PrecioCompra + ", PrecioVenta=" + PrecioVenta + "]";
+	}
+
 }

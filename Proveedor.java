@@ -1,8 +1,8 @@
 package app;
 
 public class Proveedor {
-	private String nombre;
 	private String ID;
+	private String nombre;
 
 	// Getters and Setters
 	public String getNombre() {

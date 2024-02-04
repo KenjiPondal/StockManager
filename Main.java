@@ -20,6 +20,7 @@ public class Main extends Application {
 		Parent root = FXMLLoader.load(getClass().getResource("/resource/App.fxml"));
 		primaryStage.setTitle("Manager de Stock");
 		primaryStage.setScene(new Scene(root, 600, 400));
+		primaryStage.setResizable(true); // Hacer que el tamano de las ventanas pueda cambiar
 		primaryStage.show();
 	}
 
