@@ -14,9 +14,13 @@ import com.google.gson.reflect.TypeToken;
 public class StockManager {
 	private List<Producto> productos;
 	private List<Usuario> usuarios;
+	private List<Cliente> clientes; // Added list for clients
+	private List<Proveedor> proveedores; // Added list for providers
 	private Gson gson;
 	private static final String PRODUCTOS_JSON_FILE_PATH = "productos.json";
 	private static final String USUARIOS_JSON_FILE_PATH = "usuarios.json";
+	private static final String CLIENTES_JSON_FILE_PATH = "clientes.json"; // File path for clients
+	private static final String PROVEEDORES_JSON_FILE_PATH = "proveedores.json"; // File path for providers
 
 	public StockManager() {
 		gson = new Gson();
@@ -24,6 +28,10 @@ public class StockManager {
 		}.getType());
 		usuarios = loadDataFromJson(USUARIOS_JSON_FILE_PATH, new TypeToken<ArrayList<Usuario>>() {
 		}.getType());
+		clientes = loadDataFromJson(CLIENTES_JSON_FILE_PATH, new TypeToken<ArrayList<Cliente>>() {
+		}.getType()); // Load clients from JSON
+		proveedores = loadDataFromJson(PROVEEDORES_JSON_FILE_PATH, new TypeToken<ArrayList<Proveedor>>() {
+		}.getType()); // Load providers from JSON
 	}
 
 	// Add a product to the stock
@@ -109,4 +117,78 @@ public class StockManager {
 		}
 	}
 
+	// Methods for managing clients
+	public void addClient(Cliente cliente) {
+		clientes.add(cliente);
+		saveDataToJson(CLIENTES_JSON_FILE_PATH, clientes);
+	}
+
+	public void removeClient(String clientId) {
+		clientes.removeIf(cliente -> cliente.getID().equals(clientId));
+		saveDataToJson(CLIENTES_JSON_FILE_PATH, clientes);
+	}
+
+	public void listClients() {
+		for (Cliente cliente : clientes) {
+			System.out.println(cliente);
+		}
+	}
+
+	// Method to add a provider
+	public void addProvider(Proveedor proveedor) {
+		proveedores.add(proveedor);
+		saveDataToJson(PROVEEDORES_JSON_FILE_PATH, proveedores);
+	}
+
+	// Method to remove a provider by ID
+	public void removeProvider(String providerId) {
+		proveedores.removeIf(proveedor -> proveedor.getID().equals(providerId));
+		saveDataToJson(PROVEEDORES_JSON_FILE_PATH, proveedores);
+	}
+
+	// Method to list all providers
+	public void listProviders() {
+		for (Proveedor proveedor : proveedores) {
+			System.out.println(proveedor);
+		}
+	}
+
+	// Method to process a purchase
+	public void processPurchase(List<Producto> purchasedProducts) {
+		// Remove sold products from stock
+		productos.removeAll(purchasedProducts);
+		saveDataToJson(PRODUCTOS_JSON_FILE_PATH, productos);
+
+		// Add transaction to sales history
+		addTransactionToSalesHistory(purchasedProducts);
+	}
+
+	// Method to add transaction details to sales history JSON file
+	private void addTransactionToSalesHistory(List<Producto> purchasedProducts) {
+		// Assuming there's a class Transaction to represent the transaction details
+		// and a method getSalesHistoryFilePath() to get the path of the sales history
+		// JSON file
+		List<Transaction> salesHistory = loadDataFromJson(getSalesHistoryFilePath(),
+				new TypeToken<ArrayList<Transaction>>() {
+				}.getType());
+		Transaction transaction = new Transaction(purchasedProducts);
+		salesHistory.add(transaction);
+		saveDataToJson(getSalesHistoryFilePath(), salesHistory);
+	}
+
+	public void processSale(String productId, int quantitySold) {
+		for (Producto producto : productos) {
+			if (producto.getID().equals(productId)) {
+				int newQuantity = producto.getQuantity() - quantitySold;
+				if (newQuantity >= 0) {
+					producto.setQuantity(newQuantity);
+					saveDataToJson(PRODUCTOS_JSON_FILE_PATH, productos);
+					System.out.println("Sale processed for product ID: " + productId);
+				} else {
+					System.out.println("Insufficient stock for product ID: " + productId);
+				}
+				break;
+			}
+		}
+	}
 }

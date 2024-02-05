@@ -7,15 +7,18 @@ public class Producto {
 	private String CodProveedor;
 	private double PrecioCompra;
 	private double PrecioVenta;
+	private int quantity; 
+
 	// private Date Caducidad;
 
 	// CONSTRUCTOR
-	public Producto(String iD, String nombre, String codProveedor, double precioCompra, double precioVenta) {
+	public Producto(String iD, String nombre, String codProveedor, double precioCompra, double precioVenta, int quantity) {
 		ID = iD;
 		Nombre = nombre;
 		CodProveedor = codProveedor;
 		PrecioCompra = precioCompra;
 		PrecioVenta = precioVenta;
+		this.quantity = quantity;
 		// Caducidad = caducidad;
 	}
 
@@ -60,6 +63,14 @@ public class Producto {
 		PrecioVenta = precioVenta;
 	}
 
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
 	/*
 	 * public Date getCaducidad() { return Caducidad; }
 	 * 
@@ -71,9 +82,10 @@ public class Producto {
 	}
 
 	@Override
-	public String toString() {
-		return "Producto [ID=" + ID + ", Nombre=" + Nombre + ", CodProveedor=" + CodProveedor + ", PrecioCompra="
-				+ PrecioCompra + ", PrecioVenta=" + PrecioVenta + "]";
-	}
-
+    public String toString() {
+        // Update the toString method to include the amount
+        return "Producto [ID=" + ID + ", Nombre=" + Nombre + ", CodProveedor=" + CodProveedor + ", PrecioCompra="
+                + PrecioCompra + ", PrecioVenta=" + PrecioVenta + ", Quantity=" + quantity + "]";
+    }
+}
 }

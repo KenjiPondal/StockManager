@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
@@ -79,12 +81,55 @@ public class MainController2 implements Initializable {
 		m.changeScene("/resource/Edit.fxml");
 	}
 
+	@FXML
+	private TextField purchaseQuantityField; // Assume this is linked to your FXML
+
+	@FXML
+	void onPurchaseAction(ActionEvent event) {
+		Producto selectedProduct = ProductosView.getSelectionModel().getSelectedItem();
+		if (selectedProduct != null) {
+			try {
+				int quantityToPurchase = Integer.parseInt(purchaseQuantityField.getText());
+				if (quantityToPurchase > 0) {
+
+					boolean success = StockManager.processPurchase(selectedProduct.getID(), quantityToPurchase);
+					if (success) {
+						// Update UI accordingly
+						refreshProductView();
+						purchaseQuantityField.clear();
+						// Optionally, show a success message
+					} else {
+						// Handle failure (e.g., not enough stock)
+					}
+				} else {
+					// Handle invalid quantity input
+				}
+			} catch (NumberFormatException e) {
+				// Handle invalid number format
+			}
+		} else {
+			// Handle no product selected
+		}
+	}
+
 	public static Vector<Producto> prl = new Vector<Producto>(); // Lista productos
 	public static Vector<Proveedor> prvl = new Vector<Proveedor>(); // Lista proveedores
 	public static Vector<Cliente> cll = new Vector<Cliente>(); // Lista clientes
 
 	// Manejo archivos json
 	// Productos
+
+	public void refreshProductView() {
+		// Clear the current items in the TableView
+		ProductosView.getItems().clear();
+
+		// Reload the updated list of products from the JSON file
+		prl = desserializarJsonAArray();
+
+		// Add the updated list of products to the TableView
+		ProductosView.getItems().addAll(prl);
+	}
+
 	public void serializarArrayAJson(Vector<Producto> productos) {
 
 		Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
